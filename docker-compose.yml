@@ -1,0 +1,18 @@
+services:
+  flask-api:
+    build: .
+    ports:
+      - "8000:5002"
+    environment:
+      - DB_USER=SYSTEM
+      - DB_PASSWORD=YourStrongPassword
+      - DB_HOST=oracle-xe  # Mevcut konteynırın adı
+      - DB_PORT=1521
+      - DB_SERVICE_NAME=FREEPDB1
+    depends_on: []
+    networks:
+      - my_network  # Özel ağa bağlanır
+
+networks:
+  my_network:
+    external: true  

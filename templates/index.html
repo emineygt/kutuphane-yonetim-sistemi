@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kütüphane Yönetim Sistemi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Kütüphane Yönetim Sistemi</h1>
+        
+        <div class="button-group">
+            <h2>Kütüphane İşlemleri</h2>
+            <button onclick="openModal('kutuphaneEkleModal')" class="btn">Kütüphane Ekle</button>
+            <button onclick="openModal('kutuphaneGetirModal')" class="btn">Kütüphane Getir</button>
+        </div>
+
+        <div class="button-group">
+            <h2>Çalışan İşlemleri</h2>
+            <button onclick="openModal('calisanEkleModal')" class="btn">Çalışan Ekle</button>
+            <button onclick="openModal('calisanGetirModal')" class="btn">Çalışanları Getir</button>
+        </div>
+
+        <div class="button-group">
+            <h2>Sponsor İşlemleri</h2>
+            <button onclick="openModal('sponsorEkleModal')" class="btn">Sponsor Ekle</button>
+            <button onclick="openModal('sponsorGetirModal')" class="btn">Sponsorları Getir</button>
+        </div>
+
+        <div class="button-group">
+            <h2>Ziyaretçi İşlemleri</h2>
+            <button onclick="openModal('ziyaretciEkleModal')" class="btn">Ziyaretçi Ekle</button>
+            <button onclick="openModal('ziyaretciGetirModal')" class="btn">Ziyaretçileri Getir</button>
+        </div>
+
+        <div class="button-group">
+            <h2>İstatistikler</h2>
+            <button onclick="openModal('aylikKiralamaModal')" class="btn">Aylık Kiralama İstatistikleri</button>
+            <button onclick="openModal('kitapDurumuModal')" class="btn">Kitap Durumu İstatistikleri</button>
+        </div>
+    </div>
+
+    <!-- Kütüphane Getir Modal -->
+    <div id="kutuphaneGetirModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Kütüphane Ara</h2>
+            <div class="filter-form">
+                <input type="text" id="ulkeFilter" placeholder="Ülke ile filtrele">
+                <input type="text" id="sehirFilter" placeholder="Şehir ile filtrele">
+                <button onclick="getirKutuphaneler(true)" class="btn">Filtrele</button>
+            </div>
+            <div id="kutuphaneListesi" class="liste"></div>
+        </div>
+    </div>
+
+    <!-- Çalışan Getir Modal -->
+    <div id="calisanGetirModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Çalışan Ara</h2>
+            <div class="filter-form">
+                <input type="text" id="calisanUlkeFilter" placeholder="Ülke ile filtrele">
+                <input type="text" id="calisanSehirFilter" placeholder="Şehir ile filtrele">
+                <input type="text" id="calisanKutuphaneFilter" placeholder="Kütüphane adı ile filtrele">
+                <button onclick="getirCalisanlar(true)" class="btn">Filtrele</button>
+            </div>
+            <div id="calisanListesi" class="liste"></div>
+        </div>
+    </div>
+
+    <!-- Sponsor Getir Modal -->
+    <div id="sponsorGetirModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Sponsor Ara</h2>
+            <div class="filter-form">
+                <input type="text" id="sponsorUlkeFilter" placeholder="Ülke ile filtrele">
+                <input type="text" id="sponsorSehirFilter" placeholder="Şehir ile filtrele">
+                <input type="text" id="sponsorKutuphaneFilter" placeholder="Kütüphane adı ile filtrele">
+                <button onclick="getirSponsorlar(true)" class="btn">Filtrele</button>
+            </div>
+            <div id="sponsorListesi" class="liste"></div>
+        </div>
+    </div>
+
+    <!-- Ziyaretçi Getir Modal -->
+    <div id="ziyaretciGetirModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Ziyaretçi Ara</h2>
+            <div class="filter-form">
+                <input type="text" id="ziyaretciUlkeFilter" placeholder="Ülke ile filtrele">
+                <input type="text" id="ziyaretciSehirFilter" placeholder="Şehir ile filtrele">
+                <input type="text" id="ziyaretciKutuphaneFilter" placeholder="Kütüphane adı ile filtrele">
+                <button onclick="getirZiyaretciler(true)" class="btn">Filtrele</button>
+            </div>
+            <div id="ziyaretciListesi" class="liste"></div>
+        </div>
+    </div>
+
+    <!-- Kütüphane Ekle Modal -->
+    <div id="kutuphaneEkleModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Kütüphane Ekle</h2>
+            <div class="form">
+                <input type="text" id="kutuphaneAd" placeholder="Kütüphane Adı" required>
+                <input type="text" id="kutuphaneSaatler" placeholder="Çalışma Saatleri">
+                <input type="text" id="kutuphaneUlke" placeholder="Ülke" required>
+                <input type="text" id="kutuphaneSehir" placeholder="Şehir" required>
+                <button onclick="ekleKutuphane()" class="btn">Ekle</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Çalışan Ekle Modal -->
+    <div id="calisanEkleModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Çalışan Ekle</h2>
+            <div class="form">
+                <input type="text" id="calisanAd" placeholder="Ad" required>
+                <input type="text" id="calisanPozisyon" placeholder="Pozisyon" required>
+                <input type="text" id="calisanTelefon" placeholder="Telefon">
+                <input type="number" id="calisanKutuphaneId" placeholder="Kütüphane ID" required>
+                <button onclick="ekleCalisan()" class="btn">Ekle</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sponsor Ekle Modal -->
+    <div id="sponsorEkleModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Sponsor Ekle</h2>
+            <div class="form">
+                <input type="text" id="sponsorAd" placeholder="Sponsor Adı" required>
+                <input type="number" id="sponsorKutuphaneId" placeholder="Kütüphane ID" required>
+                <button onclick="ekleSponsor()" class="btn">Ekle</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ziyaretçi Ekle Modal -->
+    <div id="ziyaretciEkleModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Ziyaretçi Ekle</h2>
+            <div class="form">
+                <input type="text" id="ziyaretciAd" placeholder="Ad" required>
+                <input type="text" id="ziyaretciSoyad" placeholder="Soyad" required>
+                <input type="email" id="ziyaretciEmail" placeholder="Email">
+                <input type="text" id="ziyaretciTelefon" placeholder="Telefon">
+                <input type="number" id="ziyaretciKutuphaneId" placeholder="Kütüphane ID" required>
+                <button onclick="ekleZiyaretci()" class="btn">Ekle</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aylık Kiralama İstatistikleri Modal -->
+    <div id="aylikKiralamaModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Aylık Kiralama İstatistikleri (Türkiye)</h2>
+            <div id="aylikKiralamaListesi" class="liste"></div>
+        </div>
+    </div>
+
+    <!-- Kitap Durumu İstatistikleri Modal -->
+    <div id="kitapDurumuModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Kitap Durumu İstatistikleri</h2>
+            <div id="kitapDurumuListesi" class="liste"></div>
+        </div>
+    </div>
+
+    <script>
+        // Modal işlemleri
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = "block";
+            
+            // Modal açıldığında ilgili verileri getir
+            switch(modalId) {
+                case 'kutuphaneGetirModal':
+                    getirKutuphaneler();
+                    break;
+                case 'calisanGetirModal':
+                    getirCalisanlar();
+                    break;
+                case 'sponsorGetirModal':
+                    getirSponsorlar();
+                    break;
+                case 'ziyaretciGetirModal':
+                    getirZiyaretciler();
+                    break;
+                case 'aylikKiralamaModal':
+                    getirAylikKiralama();
+                    break;
+                case 'kitapDurumuModal':
+                    getirKitapDurumu();
+                    break;
+            }
+        }
+
+        // Close butonları için event listener
+        var spans = document.getElementsByClassName("close");
+        for (var i = 0; i < spans.length; i++) {
+            spans[i].onclick = function() {
+                this.parentElement.parentElement.style.display = "none";
+            }
+        }
+
+        // Kütüphane getirme fonksiyonu
+        function getirKutuphaneler(filtreleme = false) {
+            let url = '/kutuphane/getir';
+            
+            if (filtreleme) {
+                const ulke = document.getElementById('ulkeFilter').value;
+                const sehir = document.getElementById('sehirFilter').value;
+                if (ulke || sehir) {
+                    url += '?';
+                    const params = [];
+                    if (ulke) params.push(`ulke=${ulke}`);
+                    if (sehir) params.push(`sehir=${sehir}`);
+                    url += params.join('&');
+                }
+            }
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const liste = document.getElementById('kutuphaneListesi');
+                    liste.innerHTML = '';
+                    if (data.kutuphaneler.length === 0) {
+                        liste.innerHTML = '<div class="liste-item"><p>Kayıt bulunamadı.</p></div>';
+                        return;
+                    }
+                    data.kutuphaneler.forEach(kutuphane => {
+                        liste.innerHTML += `
+                            <div class="liste-item">
+                                <h3>${kutuphane.ad}</h3>
+                                <p>ID: ${kutuphane.id}</p>
+                                <p>Çalışma Saatleri: ${kutuphane.calisma_saatleri || 'Belirtilmemiş'}</p>
+                                <p>Ülke: ${kutuphane.ulke}</p>
+                                <p>Şehir: ${kutuphane.sehir}</p>
+                            </div>
+                        `;
+                    });
+                })
+                .catch(error => console.error('Hata:', error));
+        }
+
+        // Çalışan getirme fonksiyonu
+        function getirCalisanlar(filtreleme = false) {
+            let url = '/calisan/getir';
+            
+            if (filtreleme) {
+                const ulke = document.getElementById('calisanUlkeFilter').value;
+                const sehir = document.getElementById('calisanSehirFilter').value;
+                const kutuphane = document.getElementById('calisanKutuphaneFilter').value;
+                if (ulke || sehir || kutuphane) {
+                    url += '?';
+                    const params = [];
+                    if (ulke) params.push(`ulke=${ulke}`);
+                    if (sehir) params.push(`sehir=${sehir}`);
+                    if (kutuphane) params.push(`kutuphane=${kutuphane}`);
+                    url += params.join('&');
+                }
+            }
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const liste = document.getElementById('calisanListesi');
+                    liste.innerHTML = '';
+                    if (data.calisanlar.length === 0) {
+                        liste.innerHTML = '<div class="liste-item"><p>Kayıt bulunamadı.</p></div>';
+                        return;
+                    }
+                    data.calisanlar.forEach(calisan => {
+                        liste.innerHTML += `
+                            <div class="liste-item">
+                                <h3>${calisan.ad}</h3>
+                                <p>ID: ${calisan.id}</p>
+                                <p>Pozisyon: ${calisan.pozisyon}</p>
+                                <p>Telefon: ${calisan.telefon || 'Belirtilmemiş'}</p>
+                                <p>Kütüphane: ${calisan.kutuphane}</p>
+                                <p>Konum: ${calisan.sehir}, ${calisan.ulke}</p>
+                            </div>
+                        `;
+                    });
+                })
+                .catch(error => console.error('Hata:', error));
+        }
+
+        // Sponsor getirme fonksiyonu
+        function getirSponsorlar(filtreleme = false) {
+            let url = '/sponsor/getir';
+            
+            if (filtreleme) {
+                const ulke = document.getElementById('sponsorUlkeFilter').value;
+                const sehir = document.getElementById('sponsorSehirFilter').value;
+                const kutuphane = document.getElementById('sponsorKutuphaneFilter').value;
+                if (ulke || sehir || kutuphane) {
+                    url += '?';
+                    const params = [];
+                    if (ulke) params.push(`ulke=${ulke}`);
+                    if (sehir) params.push(`sehir=${sehir}`);
+                    if (kutuphane) params.push(`kutuphane=${kutuphane}`);
+                    url += params.join('&');
+                }
+            }
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const liste = document.getElementById('sponsorListesi');
+                    liste.innerHTML = '';
+                    if (data.sponsorlar.length === 0) {
+                        liste.innerHTML = '<div class="liste-item"><p>Kayıt bulunamadı.</p></div>';
+                        return;
+                    }
+                    data.sponsorlar.forEach(sponsor => {
+                        liste.innerHTML += `
+                            <div class="liste-item">
+                                <h3>${sponsor.ad}</h3>
+                                <p>ID: ${sponsor.id}</p>
+                                <p>Desteklediği Kütüphane: ${sponsor.kutuphane}</p>
+                                <p>Konum: ${sponsor.sehir}, ${sponsor.ulke}</p>
+                            </div>
+                        `;
+                    });
+                })
+                .catch(error => console.error('Hata:', error));
+        }
+
+        // Ziyaretçi getirme fonksiyonu
+        function getirZiyaretciler(filtreleme = false) {
+            let url = '/ziyaretci/getir';
+            
+            if (filtreleme) {
+                const ulke = document.getElementById('ziyaretciUlkeFilter').value;
+                const sehir = document.getElementById('ziyaretciSehirFilter').value;
+                const kutuphane = document.getElementById('ziyaretciKutuphaneFilter').value;
+                if (ulke || sehir || kutuphane) {
+                    url += '?';
+                    const params = [];
+                    if (ulke) params.push(`ulke=${ulke}`);
+                    if (sehir) params.push(`sehir=${sehir}`);
+                    if (kutuphane) params.push(`kutuphane=${kutuphane}`);
+                    url += params.join('&');
+                }
+            }
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const liste = document.getElementById('ziyaretciListesi');
+                    liste.innerHTML = '';
+                    if (data.ziyaretciler.length === 0) {
+                        liste.innerHTML = '<div class="liste-item"><p>Kayıt bulunamadı.</p></div>';
+                        return;
+                    }
+                    data.ziyaretciler.forEach(ziyaretci => {
+                        liste.innerHTML += `
+                            <div class="liste-item">
+                                <h3>${ziyaretci.ad} ${ziyaretci.soyad}</h3>
+                                <p>ID: ${ziyaretci.id}</p>
+                                <p>Email: ${ziyaretci.email || 'Belirtilmemiş'}</p>
+                                <p>Telefon: ${ziyaretci.telefon || 'Belirtilmemiş'}</p>
+                                <p>Kütüphane: ${ziyaretci.kutuphane}</p>
+                                <p>Konum: ${ziyaretci.sehir}, ${ziyaretci.ulke}</p>
+                                <div class="button-group">
+                                    <button onclick="duzenleZiyaretci(${ziyaretci.id}, '${ziyaretci.ad}', '${ziyaretci.soyad}', '${ziyaretci.email || ''}', '${ziyaretci.telefon || ''}')" class="btn">Düzenle</button>
+                                    <button onclick="silZiyaretci(${ziyaretci.id})" class="btn btn-danger">Sil</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                })
+                .catch(error => console.error('Hata:', error));
+        }
+
+        // Kütüphane ekleme fonksiyonu
+        function ekleKutuphane() {
+            const data = {
+                ad: document.getElementById('kutuphaneAd').value,
+                calisma_saatleri: document.getElementById('kutuphaneSaatler').value,
+                ulke: document.getElementById('kutuphaneUlke').value,
+                sehir: document.getElementById('kutuphaneSehir').value
+            };
+            
+            fetch('/kutuphane/ekle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message || data.error);
+                if (!data.error) {
+                    document.getElementById('kutuphaneEkleModal').style.display = 'none';
+                }
+            })
+            .catch(error => console.error('Hata:', error));
+        }
+
+        // Çalışan ekleme fonksiyonu
+        function ekleCalisan() {
+            const data = {
+                ad: document.getElementById('calisanAd').value,
+                pozisyon: document.getElementById('calisanPozisyon').value,
+                telefon: document.getElementById('calisanTelefon').value,
+                kutuphane_id: parseInt(document.getElementById('calisanKutuphaneId').value)
+            };
+            
+            fetch('/calisan/ekle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message || data.error);
+                if (!data.error) {
+                    document.getElementById('calisanEkleModal').style.display = 'none';
+                }
+            })
+            .catch(error => console.error('Hata:', error));
+        }
+
+        // Sponsor ekleme fonksiyonu
+        function ekleSponsor() {
+            const data = {
+                ad: document.getElementById('sponsorAd').value,
+                kutuphane_id: parseInt(document.getElementById('sponsorKutuphaneId').value)
+            };
+            
+            fetch('/sponsor/ekle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message || data.error);
+                if (!data.error) {
+                    document.getElementById('sponsorEkleModal').style.display = 'none';
+                }
+            })
+            .catch(error => console.error('Hata:', error));
+        }
+
+        // Ziyaretçi ekleme fonksiyonu
+        function ekleZiyaretci() {
+            const data = {
+                ad: document.getElementById('ziyaretciAd').value,
+                soyad: document.getElementById('ziyaretciSoyad').value,
+                email: document.getElementById('ziyaretciEmail').value,
+                telefon: document.getElementById('ziyaretciTelefon').value,
+                kutuphane_id: parseInt(document.getElementById('ziyaretciKutuphaneId').value)
+            };
+            
+            fetch('/ziyaretci/ekle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message || data.error);
+                if (!data.error) {
+                    document.getElementById('ziyaretciEkleModal').style.display = 'none';
+                }
+            })
+            .catch(error => console.error('Hata:', error));
+        }
+
+        // İstatistik fonksiyonları
+        function getirAylikKiralama() {
+            fetch('/istatistik/aylik-kiralama')
+                .then(response => response.json())
+                .then(data => {
+                    const liste = document.getElementById('aylikKiralamaListesi');
+                    liste.innerHTML = '';
+                    if (data.aylik_kiralama.length === 0) {
+                        liste.innerHTML = '<div class="liste-item"><p>Kayıt bulunamadı.</p></div>';
+                        return;
+                    }
+                    data.aylik_kiralama.forEach(istatistik => {
+                        liste.innerHTML += `
+                            <div class="liste-item">
+                                <h3>${istatistik.ay}</h3>
+                                <p>Kiralama Sayısı: ${istatistik.kiralama_sayisi}</p>
+                            </div>
+                        `;
+                    });
+                })
+                .catch(error => console.error('Hata:', error));
+        }
+
+        function getirKitapDurumu() {
+            fetch('/istatistik/kitap-durumu')
+                .then(response => response.json())
+                .then(data => {
+                    const liste = document.getElementById('kitapDurumuListesi');
+                    liste.innerHTML = '';
+                    if (data.kitap_durumu.length === 0) {
+                        liste.innerHTML = '<div class="liste-item"><p>Kayıt bulunamadı.</p></div>';
+                        return;
+                    }
+                    data.kitap_durumu.forEach(kitap => {
+                        liste.innerHTML += `
+                            <div class="liste-item">
+                                <h3>${kitap.kitap_adi}</h3>
+                                <p>Kiralanma Sayısı: ${kitap.kiralanma_sayisi}</p>
+                                <p>Kiralanabilir Adet: ${kitap.kiralanabilir_adet}</p>
+                            </div>
+                        `;
+                    });
+                })
+                .catch(error => console.error('Hata:', error));
+        }
+
+        // Ziyaretçi silme fonksiyonu
+        function silZiyaretci(id) {
+            if (confirm('Bu ziyaretçiyi silmek istediğinizden emin misiniz?')) {
+                fetch(`/ziyaretci/sil/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message || data.error);
+                    if (!data.error) {
+                        getirZiyaretciler(); // Listeyi güncelle
+                    }
+                })
+                .catch(error => console.error('Hata:', error));
+            }
+        }
+
+        // Ziyaretçi düzenleme fonksiyonu
+        function duzenleZiyaretci(id, ad, soyad, email, telefon) {
+            const yeniAd = prompt('Yeni ad:', ad);
+            if (!yeniAd) return;
+            
+            const yeniSoyad = prompt('Yeni soyad:', soyad);
+            if (!yeniSoyad) return;
+            
+            const yeniEmail = prompt('Yeni email:', email);
+            const yeniTelefon = prompt('Yeni telefon:', telefon);
+            
+            const data = {
+                ad: yeniAd,
+                soyad: yeniSoyad,
+                email: yeniEmail,
+                telefon: yeniTelefon
+            };
+            
+            fetch(`/ziyaretci/duzenle/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message || data.error);
+                if (!data.error) {
+                    getirZiyaretciler(); // Listeyi güncelle
+                }
+            })
+            .catch(error => console.error('Hata:', error));
+        }
+    </script>
+</body>
+</html> 
